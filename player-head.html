@@ -31,3 +31,22 @@ body,
   max-width: 1100px !important;
 }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("a").forEach(function (link) {
+    const label = link.textContent.trim();
+
+    // Only alter links whose visible text contains a folder path.
+    if (!label.includes("/")) return;
+
+    const parts = label.split("/");
+    let filename = parts[parts.length - 1].trim();
+
+    // Remove an HTML extension if one is displayed.
+    filename = filename.replace(/\.html?$/i, "");
+
+    link.textContent = filename;
+  });
+});
+</script>
