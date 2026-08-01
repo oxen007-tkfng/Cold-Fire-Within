@@ -33,20 +33,47 @@ body,
 </style>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll("a").forEach(function (link) {
-    const label = link.textContent.trim();
+(function () {
+  function shortenPublishedLinks() {
+    document.querySelectorAll("a").forEach(function (link) {
+      const label = link.textContent.trim();
 
-    // Only alter links whose visible text contains a folder path.
-    if (!label.includes("/")) return;
+      if (!label.includes("/") && !label.includes("\\")) {
+        return;
+      }
 
-    const parts = label.split("/");
-    let filename = parts[parts.length - 1].trim();
+      const parts = label.split(/[\/\\]/);
+      let filename = parts[parts.length - 1].trim();
 
-    // Remove an HTML extension if one is displayed.
-    filename = filename.replace(/\.html?$/i, "");
+      filename = filename.replace(/\.html?$/i, "");
 
-    link.textContent = filename;
-  });
-});
+      if (filename) {
+        link.textContent = filename;
+      }
+    });
+  }
+
+  function start() {
+    shortenPublishedLinks();
+
+    const observer = new MutationObserver(function () {
+      shortenPublishedLinks();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    setTimeout(shortenPublishedLinks, 250);
+    setTimeout(shortenPublishedLinks, 1000);
+    setTimeout(shortenPublishedLinks, 2500);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+})();
 </script>
